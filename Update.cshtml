@@ -1,0 +1,119 @@
+﻿
+@model IEnumerable<JobPlacementDashboard.Models.JPNotification>
+
+<div class="container">
+    <div class="col-sm-12">
+        @using (Html.BeginForm("JpNotifications", "Update", FormMethod.Get))
+        {
+
+            <div id="SearchContainerNet">
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" id="updateSearchBar">
+                            <div id="custom-search-input">
+                                <div class="input-group col-md-8">
+                                    <input type="search" name="keyword" class=" input-lg" placeholder="Enter keyword to filter" />
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-info btn-lg" type="submit">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                            @Html.ActionLink("Reset", "JpNotifications", Model, new { @class = "btn btn-primary", @id = "resetBtn" })
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+        @Html.ValidationSummary()
+
+        <div>
+            @using (Html.BeginForm())
+            {
+                <div class="btn-group">
+                    @{var queryString = HttpContext.Current.Request.QueryString.ToString();}
+
+            @if (queryString == "sortOrder=Graduates")
+            {
+                <button class="btn btn-sm filter-btn" id="filter-btn-title" type="button">Filtering by: Graduates</button>
+            }
+            else if (queryString == "sortOrder=Hires")
+            {
+                <button class="btn btn-sm filter-btn" id="filter-btn-title" type="button">Filtering by: Hires</button>
+            }
+            else
+            {
+                <button class="btn btn-sm filter-btn" id="filter-btn-title" type="button">Filter</button>
+            }
+            <button class="btn btn-sm dropdown-toggle filter-btn" id="" data-toggle="dropdown" type="button"><span class="fa fa-caret-down"></span></button>
+            <div class="dropdown-menu item-wrapper" style="width: 60px">
+                @*@Html.ActionLink("None", "Update", new { sortOrder = ViewBag.NoneFilter, currentFilter = ViewBag.CurrentFilter }, new { id = "none-filter", @class = "dropdown-item checklist-item" })*@
+                @Html.ActionLink("Graduates", "Update", new { sortOrder = ViewBag.GraduateFilter, currentFilter = ViewBag.CurrentFilter }, new { id = "grad-filter", @class = "dropdown-item checklist-item" })
+                @Html.ActionLink("Hires", "Update", new { sortOrder = ViewBag.HireFilter, currentFilter = ViewBag.CurrentFilter }, new { id = "hire-filter", @class = "dropdown-item checklist-item" })
+            </div>
+        </div>
+                }
+        <table class="table">
+            <tr>
+                <th class="table-headers fixed">
+                    @Html.ActionLink("Name", "Update")
+                </th>
+                <th class="table-headers fixed">
+                    @Html.ActionLink("Graduate", "Update", new { sortOrder = ViewBag.GraduateSortParm, currentFilter = ViewBag.CurrentFilter })
+                </th>
+                <th class="table-headers fixed">
+                    @Html.ActionLink("Hire", "Update", new { sortOrder = ViewBag.HireSortParm, currentFilter = ViewBag.CurrentFilter })
+                </th>
+                <th class="table-headers fixed">
+                    @Html.ActionLink("Notification Date", "Update", new { sortOrder = ViewBag.DateSortParm, currentFilter = ViewBag.CurrentFilter })
+                </th>
+                <th></th>
+            </tr>
+            @{string emailList = string.Empty; }
+            @foreach (var item in Model)
+            {
+                <tr class="text-center">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.JPStudent.JPName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Graduate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Hire)
+                    </td>
+                    <td class="network-label">
+                        @Html.Label(item.NotificationDate.ToShortDateString())
+                    </td>
+                    <td class="font20">
+                        @Html.ActionLink(HttpUtility.HtmlDecode(" &#x270E;"), "Edit", new { id = item.NotificationId }) |
+
+
+                            @{string emailString = item.JPStudent.JPEmail;} <!-- declaring empty email string -->
+                       
+                            <!-- concatenating emailString with next emailString to generate a list
+                            that will be passed to controller for export to CSV-->
+                          
+                        </td>
+                    </tr>
+                }
+            </table>
+            <div>
+                <form style="display: inline" action="mailto:?bcc=@emailList" method="post">
+                    <button class="btn btn-primary">Email Students</button>
+                 </form>  
+          
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script type="text/javascript">
+            $(".dropdown-toggle").dropdown();
+        </script>
+    }
